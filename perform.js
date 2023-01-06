@@ -10,7 +10,7 @@ function divide(num1, num2) {
   if (num2 == 0) {
     return "UNDEFINED";
   }
-  return num1 / num2;
+  return (num1 / num2).toFixed(5);
 }
 
 function multiply(num1, num2) {
@@ -26,7 +26,7 @@ function operator(num1, operator, num2) {
       return sub(num1, num2);
       break;
     case "divid":
-      return div(num1, num2);
+      return divide(num1, num2);
       break;
     case "mul":
       return multiply(num1, num2);
@@ -45,6 +45,16 @@ function logText(e) {
     first = undefined;
     oper = undefined;
     second = undefined;
+    first = true;
+    sign = true;
+  } else if (classes[1] === "sign") {
+    if (sign == true) {
+      input.textContent = "-" + input.textContent;
+      sign = false;
+    } else if (sign == false) {
+      input.textContent = input.textContent.slice(1);
+      sign = true;
+    }
   } else if (classes[2] === "number") {
     switch (classes[1]) {
       case "one":
@@ -91,30 +101,59 @@ function logText(e) {
         break;
     }
   } else if (classes[2] === "op") {
-    if (first == undefined) {
-      first = convertToNum(calculate);
-      console.log(first);
-      while (calculate.length > 0) {
-        calculate.pop();
-      }
+    console.log("here");
+    if (first == true) {
+      result = convertToNum(calculate);
+      clearCalculate();
+      input.textContent = "";
+      resultdiv.textContent = "" + result;
+      first = false;
       oper = classes[1];
-      console.log(oper);
+    } else if (afterEqual == true && classes[1] === "percent") {
+      console.log("here");
+      result = (result / 100).toFixed(5);
+      resultdiv.textContent = "" + result;
+    } else if (afterEqual == true) {
+      oper = classes[1];
+      afterEqual = false;
+    } else if (classes[1] === "percent") {
+    } else {
+      second = convertToNum(calculate);
+      clearCalculate();
+      input.textContent = "";
+      result = operator(result, oper, second);
+      resultdiv.textContent = "" + result;
+      oper = classes[1];
+    }
+    switch (oper) {
+      case "divid":
+        input.textContent = "/ ";
+        break;
+      case "mul":
+        input.textContent = "* ";
+        break;
+      case "sub":
+        input.textContent = "- ";
+        break;
+      case "add":
+        input.textContent = "+ ";
+        break;
     }
   } else if (classes[1] === "equal") {
-    console.log("here");
-    if (second == undefined && oper != undefined) {
-      console.log("goes through here");
-      result = operator(first, oper, first);
-      console.log(result);
+    if (calculate.length > 0 && oper != undefined) {
+      second = convertToNum(calculate);
+      clearCalculate();
+      input.textContent = "";
+      result = operator(result, oper, second);
       resultdiv.textContent = "" + result;
-    } else {
+      afterEqual = true;
+    } else if (second == undefined && calculate.length == 0) {
+      input.textContent = "";
+      result = operator(result, oper, result);
+      resultdiv.textContent = "" + result;
+      afterEqual = true;
     }
   }
-  //  switch (classes[1]){
-  //    case 'one':
-  //       calculate.push(1);
-  //}
-  //input.textContent += `${classes[1]} `;
 }
 
 function convertToNum(numList) {
@@ -123,7 +162,16 @@ function convertToNum(numList) {
   for (let i = 0; i < numrev.length; i++) {
     number += numrev[i] * Math.pow(10, i);
   }
+  if (sign == false) {
+    number = number * -1;
+  }
   return number;
+}
+
+function clearCalculate() {
+  while (calculate.length > 0) {
+    calculate.pop();
+  }
 }
 
 let calculate = [];
@@ -131,9 +179,11 @@ let calculate = [];
 const buttons = document.querySelectorAll(".button");
 const input = document.querySelector("#input");
 const resultdiv = document.querySelector("#result");
-let first = undefined;
+let first = true;
 let second = undefined;
 let oper = undefined;
 let result = 0;
+let afterEqual = false;
+let sign = true;
 
 buttons.forEach((button) => button.addEventListener("click", logText));
