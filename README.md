@@ -1,2 +1,2 @@
 # calculator
-Calculator project
+Calculator project created with most functionality implemented.
