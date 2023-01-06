@@ -94,7 +94,10 @@ function logText(e) {
         input.textContent += "9";
         break;
       case "zero":
-        if (calculate[0] != undefined) {
+        if (
+          calculate[0] != undefined ||
+          (calculate[0] == undefined && oper === "divid")
+        ) {
           calculate.push(0);
           input.textContent += "0";
         }
@@ -116,7 +119,6 @@ function logText(e) {
     } else if (afterEqual == true) {
       oper = classes[1];
       afterEqual = false;
-    } else if (classes[1] === "percent") {
     } else {
       second = convertToNum(calculate);
       clearCalculate();
@@ -175,7 +177,6 @@ function clearCalculate() {
 }
 
 let calculate = [];
-//console.log(operator(1, "add", 2));
 const buttons = document.querySelectorAll(".button");
 const input = document.querySelector("#input");
 const resultdiv = document.querySelector("#result");
